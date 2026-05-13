@@ -55,7 +55,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        /* ESTADOS DE AUDITORÍA SOLICITADOS */
         .mesa-free { background-color: #ffffff; color: #64748b; border: 2px solid #e2e8f0; }
         .mesa-occupied { 
             background-color: #000000 !important; 
@@ -115,6 +114,39 @@
             padding-bottom: 100px; 
         }
         .screen-overlay.active { display: flex; }
+
+        /* =========================================================================
+           CORRECCIÓN ULTRA COMPACTA PARA MODO APAISADO (LANDSCAPE / MÓVIL DE LADO)
+           ========================================================================= */
+        @media (max-height: 520px) and (orientation: landscape) {
+            header { 
+                padding-top: 6px !important; 
+                padding-bottom: 6px !important; 
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+            header .w-10.h-10 { width: 24px !important; height: 24px !important; border-radius: 6px !important; }
+            header .w-10.h-10 i { font-size: 12px !important; }
+            header h1 { font-size: 13px !important; }
+            header p { display: none !important; }
+            #lock-btn { padding: 4px 8px !important; border-radius: 8px !important; }
+            #lock-btn span { font-size: 8px !important; }
+            #lock-btn i { font-size: 8px !important; }
+
+            .bg-white.border-b.px-6.py-3 { padding-top: 4px !important; padding-bottom: 4px !important; padding-left: 12px !important; padding-right: 12px !important; }
+            .bg-white.border-b.px-6.py-3 p.text-sm { font-size: 11px !important; }
+            .bg-white.border-b.px-6.py-3 button { padding: 2px 8px !important; font-size: 9px !important; }
+
+            nav { padding-top: 4px !important; padding-bottom: 4px !important; padding-left: 8px !important; padding-right: 8px !important; }
+            nav button { padding-top: 6px !important; padding-bottom: 6px !important; font-size: 9px !important; border-radius: 8px !important; }
+            
+            .screen-overlay { top: 115px; }
+            
+            footer { padding: 8px !important; }
+            footer button { padding-top: 10px !important; padding-bottom: 10px !important; font-size: 10px !important; border-radius: 14px !important; }
+            #table-edit-zone input { padding: 8px 12px !important; font-size: 12px !important; border-radius: 12px !important; }
+            #table-edit-zone button { width: 36px !important; height: 36px !important; border-radius: 12px !important; }
+        }
 
         @media print {
             header, nav, footer, .no-print { display: none !important; }
@@ -373,7 +405,6 @@
                         currentScale = Math.min(main.clientWidth / container.offsetWidth, main.clientHeight / container.offsetHeight, 1) * 0.95;
                     }
                     
-                    // LÓGICA DE MOVIMIENTO ABSOLUTO EN PX REESCRITA (MÉTODO PERFECTO):
                     t.x = (e.clientX - rect.left) / currentScale;
                     t.y = (e.clientY - rect.top) / currentScale;
                     render();
@@ -398,7 +429,6 @@
         }
 
         function createInitialLayout() {
-            // Inicializa las mesas en pixeles fijos en lugar de porcentajes
             tables = Array.from({ length: 15 }, (_, i) => ({
                 id: Date.now() + i, 
                 x: 150 + (i % 5) * 180, 
@@ -423,7 +453,6 @@
                 div.className = `mesa ${statusClass} ${selectedId === t.id && currentMode === 'design' ? 'selected-design' : ''}`;
                 div.setAttribute('data-id', t.id);
                 
-                // Renderizado preciso usando coordenadas en pixeles fijos (px)
                 div.style.left = `${t.x}px`;
                 div.style.top = `${t.y}px`;
                 div.style.width = `${t.w}px`;
