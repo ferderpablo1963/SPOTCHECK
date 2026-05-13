@@ -517,7 +517,6 @@
             document.getElementById('stat-occupied').innerText = activeCount;
             document.getElementById('stat-percent').innerText = (tables.length > 0 ? Math.round((activeCount / tables.length) * 100) : 0) + '%';
             
-            // Asignación directa de las mesas ocupadas en el plano al campo In Situ
             if (document.getElementById('note-insitu')) {
                 document.getElementById('note-insitu').value = activeCount;
             }
@@ -580,33 +579,42 @@
 
         function clearCurrentAudit() { if(!confirm("¿Resetear el control actual?")) return; tables.forEach(t => t.status = 'free'); saveData(); render(); showToast("Plano Reiniciado"); }
 
+        /* CORRECCIÓN INTERNA DEL GUARDADO EN EL STORAGE */
         function saveAudit() {
             const insituCount = tables.filter(t => t.status === 'occupied' || t.status === 'indet').length;
             const microsVal = parseInt(document.getElementById('note-micros').value) || 0;
             const discrepancyNum = insituCount - microsVal;
 
-            // Extraemos solo las mesas con estado activo (Negras o Rojas)
-            const activeTablesDetail = tables
-                .filter(t => t.status === 'occupied' || t.status === 'indet')
-                .map(t => ({
-                    label: t.label,
-                    type: t.status === 'occupied' ? 'OCUPADA' : 'DISCREPANTE'
-                }));
+            const activeTablesDetail = [];
+            tables.forEach(t => {
+                if (t.status === 'occupied' || t.status === 'indet') {
+                    activeTablesDetail.push({
+                        label: t.label,
+                        type: t.status === 'occupied' ? 'OCUPADA' : 'DISCREPANTE'
+                    });
+                }
+            });
 
-            audits.unshift({
+            const lugarInput = document.getElementById('note-lugar').value.trim();
+            const firmaInput = document.getElementById('note-firma').value.trim();
+            const obsInput = document.getElementById('note-observaciones').value.trim();
+
+            const newAudit = {
                 id: Date.now(), 
                 date: new Date().toLocaleDateString(), 
                 time: document.getElementById('note-hora').value, 
-                lugar: document.getElementById('note-lugar').value || 'Salón Principal',
+                lugar: lugarInput || 'Salón Principal',
                 insitu: insituCount, 
                 micros: microsVal,
                 discrepancy: discrepancyNum,
-                firma: (document.getElementById('note-firma').value || 'AUDITOR').toUpperCase(),
-                obs: document.getElementById('note-observaciones').value || 'Sin observaciones.',
+                firma: (firmaInput || 'AUDITOR').toUpperCase(),
+                obs: obsInput || 'Sin observaciones.',
                 reportedTables: activeTablesDetail
-            });
+            };
 
-            // Limpiamos el plano y reseteamos inputs
+            audits.unshift(newAudit);
+
+            // Reseteo seguro de la app
             tables.forEach(t => t.status = 'free');
             document.getElementById('note-micros').value = '';
             document.getElementById('note-observaciones').value = '';
@@ -619,7 +627,6 @@
 
         function renderHistory() {
             document.getElementById('history-list').innerHTML = audits.map((a) => {
-                // Generamos las filas de la tabla solo con las mesas afectadas
                 const tableRows = a.reportedTables.map(t => `
                     <div class="flex justify-between py-1.5 print-table-row border-b border-slate-100 text-[11px]">
                         <span class="font-black text-slate-900">Mesa ${t.label}</span>
