@@ -310,6 +310,7 @@
         let resizingId = null;
         let rotatingId = null;
         let isFitted = false; 
+        let currentScale = 1; // Almacena el valor del zoom activo para normalizar el arrastre
 
         let startPos = { x: 0, y: 0 };
         let startMesaPos = { x: 0, y: 0 };
@@ -346,7 +347,7 @@
             tables = salones[currentSalon] || [];
             document.getElementById('salon-name-input').value = currentSalon;
             document.getElementById('note-lugar').value = currentSalon;
-            if (isFitted) toggleFit(); // Desactivar fit al cambiar de sala para consistencia visual
+            if (isFitted) toggleFit(); 
             deselectTable();
             render();
         }
@@ -380,7 +381,7 @@
             if (isFitted) toggleFit();
             updateSalonSelectorUI();
             render();
-            showToast("Salón" + " Eliminado");
+            showToast("Salón Eliminado");
         }
 
         function toggleFit() {
@@ -390,13 +391,14 @@
             if (!isFitted) {
                 const scaleX = main.clientWidth / container.offsetWidth;
                 const scaleY = main.clientHeight / container.offsetHeight;
-                const finalScale = Math.min(scaleX, scaleY);
-                container.style.transform = `scale(${finalScale})`;
+                currentScale = Math.min(scaleX, scaleY);
+                container.style.transform = `scale(${currentScale})`;
                 main.scrollLeft = 0;
                 main.scrollTop = 0;
                 btn.classList.replace('bg-slate-100', 'bg-emerald-500');
                 btn.classList.replace('text-slate-600', 'text-white');
             } else {
+                currentScale = 1;
                 container.style.transform = `scale(1)`;
                 btn.classList.replace('bg-emerald-500', 'bg-slate-100');
                 btn.classList.replace('text-white', 'text-slate-600');
@@ -408,8 +410,8 @@
             if (resizingId) {
                 const t = tables.find(x => x.id === resizingId);
                 if (t) {
-                    t.w = Math.max(30, startMesaSize.w + (e.clientX - startPos.x));
-                    t.h = Math.max(30, startMesaSize.h + (e.clientY - startPos.y));
+                    t.w = Math.max(30, startMesaSize.w + ((e.clientX - startPos.x) / currentScale));
+                    t.h = Math.max(30, startMesaSize.h + ((e.clientY - startPos.y) / currentScale));
                     render();
                 }
                 return;
@@ -430,9 +432,9 @@
             if (draggingId) {
                 const t = tables.find(x => x.id === draggingId);
                 if (t) {
-                    // Retorno a la formula nativa fluida en pixeles directos del original
-                    t.x = startMesaPos.x + (e.clientX - startPos.x);
-                    t.y = startMesaPos.y + (e.clientY - startPos.y);
+                    // CORRECCIÓN CLAVE: Se divide la diferencia por el factor currentScale para independizar el arrastre del zoom aplicado
+                    t.x = startMesaPos.x + ((e.clientX - startPos.x) / currentScale);
+                    t.y = startMesaPos.y + ((e.clientY - startPos.y) / currentScale);
                     render();
                 }
             }
@@ -455,7 +457,6 @@
         }
 
         function createInitialLayout() {
-            // Layout nativo basado en posiciones fijas absolutas en pixeles
             tables = Array.from({ length: 10 }, (_, i) => ({
                 id: Date.now() + i, 
                 x: 150 + (i % 5) * 180, 
@@ -477,7 +478,6 @@
                 let statusClass = t.status === 'occupied' ? 'mesa-occupied' : (t.status === 'indet' ? 'mesa-indet' : 'mesa-free');
                 div.className = `mesa ${statusClass} ${selectedId === t.id && currentMode === 'design' ? 'selected-design' : ''}`;
                 div.setAttribute('data-id', t.id);
-                // Renderizado absoluto en pixeles (No porcentajes rotos)
                 div.style.left = `${t.x}px`;
                 div.style.top = `${t.y}px`;
                 div.style.width = `${t.w}px`;
