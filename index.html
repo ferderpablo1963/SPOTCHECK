@@ -29,7 +29,7 @@
             width: 2000px;
             position: relative;
             background-color: #ffffff;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             transform-origin: top left;
         }
 
@@ -42,7 +42,7 @@
                 padding-right: 12px !important;
                 height: 32px !important;
             }
-            header .flex.items-center.gap-3 div:first-child { display: none !important; } /* Oculta icono grande */
+            header .flex.items-center.gap-3 div:first-child { display: none !important; } 
             header h1 { font-size: 11px !important; line-height: 1 !important; }
             header p { display: none !important; }
             #lock-btn { padding-top: 2px !important; padding-bottom: 2px !important; padding-left: 8px !important; padding-right: 8px !important; border-radius: 8px !important; }
@@ -295,7 +295,6 @@
     <script>
         const DB_PREFIX = 'spotcheck_final_v2';
         
-        // Estructura de Salones
         let salones = JSON.parse(localStorage.getItem(`${DB_PREFIX}_salones`)) || {
             "Lobby Bar": []
         };
@@ -326,7 +325,6 @@
             window.addEventListener('pointerup', handlePointerUp);
         }
 
-        // Gestión de múltiples salones
         function updateSalonSelectorUI() {
             const selector = document.getElementById('salon-selector');
             selector.innerHTML = '';
@@ -348,6 +346,7 @@
             tables = salones[currentSalon] || [];
             document.getElementById('salon-name-input').value = currentSalon;
             document.getElementById('note-lugar').value = currentSalon;
+            if (isFitted) toggleFit(); // Desactivar fit al cambiar de sala para consistencia visual
             deselectTable();
             render();
         }
@@ -356,7 +355,6 @@
             const nameInput = document.getElementById('salon-name-input').value.trim();
             if(!nameInput) { alert("Ingresa un nombre válido"); return; }
             
-            // Guardar el plano actual en el objeto de salones
             salones[nameInput] = JSON.parse(JSON.stringify(tables));
             currentSalon = nameInput;
             
@@ -379,9 +377,10 @@
             localStorage.setItem(`${DB_PREFIX}_salones`, JSON.stringify(salones));
             localStorage.setItem(`${DB_PREFIX}_current_salon`, currentSalon);
             
+            if (isFitted) toggleFit();
             updateSalonSelectorUI();
             render();
-            showToast("Salón Eliminado");
+            showToast("Salón" + " Eliminado");
         }
 
         function toggleFit() {
@@ -391,8 +390,10 @@
             if (!isFitted) {
                 const scaleX = main.clientWidth / container.offsetWidth;
                 const scaleY = main.clientHeight / container.offsetHeight;
-                const finalScale = Math.min(scaleX, scaleY, 1) * 0.95;
+                const finalScale = Math.min(scaleX, scaleY);
                 container.style.transform = `scale(${finalScale})`;
+                main.scrollLeft = 0;
+                main.scrollTop = 0;
                 btn.classList.replace('bg-slate-100', 'bg-emerald-500');
                 btn.classList.replace('text-slate-600', 'text-white');
             } else {
@@ -429,9 +430,9 @@
             if (draggingId) {
                 const t = tables.find(x => x.id === draggingId);
                 if (t) {
-                    const rect = document.getElementById('mesas-layer').getBoundingClientRect();
-                    t.x = Math.max(0, Math.min(100, startMesaPos.x + ((e.clientX - startPos.x) / rect.width * 100)));
-                    t.y = Math.max(0, Math.min(100, startMesaPos.y + ((e.clientY - startPos.y) / rect.height * 100)));
+                    // Retorno a la formula nativa fluida en pixeles directos del original
+                    t.x = startMesaPos.x + (e.clientX - startPos.x);
+                    t.y = startMesaPos.y + (e.clientY - startPos.y);
                     render();
                 }
             }
@@ -454,8 +455,11 @@
         }
 
         function createInitialLayout() {
+            // Layout nativo basado en posiciones fijas absolutas en pixeles
             tables = Array.from({ length: 10 }, (_, i) => ({
-                id: Date.now() + i, x: 10 + (i % 5) * 15, y: 10 + Math.floor(i / 5) * 15,
+                id: Date.now() + i, 
+                x: 150 + (i % 5) * 180, 
+                y: 150 + Math.floor(i / 5) * 180,
                 label: (i + 1).toString(), status: 'free',
                 w: 70, h: 70, rotation: 0
             }));
@@ -473,8 +477,9 @@
                 let statusClass = t.status === 'occupied' ? 'mesa-occupied' : (t.status === 'indet' ? 'mesa-indet' : 'mesa-free');
                 div.className = `mesa ${statusClass} ${selectedId === t.id && currentMode === 'design' ? 'selected-design' : ''}`;
                 div.setAttribute('data-id', t.id);
-                div.style.left = `${t.x}%`;
-                div.style.top = `${t.y}%`;
+                // Renderizado absoluto en pixeles (No porcentajes rotos)
+                div.style.left = `${t.x}px`;
+                div.style.top = `${t.y}px`;
                 div.style.width = `${t.w}px`;
                 div.style.height = `${t.h}px`;
                 div.style.transform = `translate(-50%, -50%) rotate(${t.rotation || 0}deg)`;
@@ -495,7 +500,8 @@
                     if (currentMode === 'design' && !isLocked) {
                         e.stopPropagation();
                         selectedId = t.id; draggingId = t.id;
-                        startPos = { x: e.clientX, y: e.clientY }; startMesaPos = { x: t.x, y: t.y };
+                        startPos = { x: e.clientX, y: e.clientY }; 
+                        startMesaPos = { x: t.x, y: t.y };
                         updateDesignPanel(); render();
                     } else if (currentMode === 'audit') {
                         if (t.status === 'free' || !t.status) t.status = 'occupied';
@@ -554,7 +560,7 @@
         function deselectTable() { if(!draggingId && !resizingId && !rotatingId) { selectedId = null; updateDesignPanel(); render(); } }
         function deleteSelected() { tables = tables.filter(t => t.id !== selectedId); deselectTable(); saveData(); }
         function addTable(type) { 
-            tables.push({ id: Date.now(), x: 50, y: 50, label: (tables.length + 1).toString(), status: 'free', w: type === 'vip' ? 140 : 70, h: type === 'vip' ? 80 : 70, rotation: 0 }); 
+            tables.push({ id: Date.now(), x: 250, y: 250, label: (tables.length + 1).toString(), status: 'free', w: type === 'vip' ? 140 : 70, h: type === 'vip' ? 80 : 70, rotation: 0 }); 
             saveData(); render(); 
         }
 
