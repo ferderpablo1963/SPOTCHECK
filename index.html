@@ -223,7 +223,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="text-[9px] font-black uppercase text-slate-400 ml-2 italic">Notes</label>
+                    <label class="text-[9px] font-black uppercase text-slate-400 ml-2 italic">Notas</label>
                     <textarea id="note-observaciones" rows="3" placeholder="Detalles adicionales..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-semibold text-xs outline-none"></textarea>
                 </div>
             </div>
@@ -434,9 +434,9 @@
                 return;
             }
             if (draggingId) {
+                // FILTRADO INDIVIDUAL CORRECTO: Solo modificamos la mesa específica asignada a draggingId
                 const t = tables.find(x => x.id === draggingId);
                 if (t) {
-                    // SE CORRIGE EL ARRASTRE MULTIPLICANDO POR EL FACTOR DE ESCALA REAL DEL MAPA DEL MODO FIT
                     let currentScale = 1;
                     if (isFitted) {
                         const container = document.getElementById('map-container');
