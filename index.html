@@ -310,7 +310,6 @@
         let resizingId = null;
         let rotatingId = null;
         let isFitted = false; 
-        let currentScale = 1; // Almacena el valor del zoom activo para normalizar el arrastre
 
         let startPos = { x: 0, y: 0 };
         let startMesaPos = { x: 0, y: 0 };
@@ -391,14 +390,13 @@
             if (!isFitted) {
                 const scaleX = main.clientWidth / container.offsetWidth;
                 const scaleY = main.clientHeight / container.offsetHeight;
-                currentScale = Math.min(scaleX, scaleY);
-                container.style.transform = `scale(${currentScale})`;
+                const finalScale = Math.min(scaleX, scaleY);
+                container.style.transform = `scale(${finalScale})`;
                 main.scrollLeft = 0;
                 main.scrollTop = 0;
                 btn.classList.replace('bg-slate-100', 'bg-emerald-500');
                 btn.classList.replace('text-slate-600', 'text-white');
             } else {
-                currentScale = 1;
                 container.style.transform = `scale(1)`;
                 btn.classList.replace('bg-emerald-500', 'bg-slate-100');
                 btn.classList.replace('text-white', 'text-slate-600');
@@ -410,8 +408,8 @@
             if (resizingId) {
                 const t = tables.find(x => x.id === resizingId);
                 if (t) {
-                    t.w = Math.max(30, startMesaSize.w + ((e.clientX - startPos.x) / currentScale));
-                    t.h = Math.max(30, startMesaSize.h + ((e.clientY - startPos.y) / currentScale));
+                    t.w = Math.max(30, startMesaSize.w + (e.clientX - startPos.x));
+                    t.h = Math.max(30, startMesaSize.h + (e.clientY - startPos.y));
                     render();
                 }
                 return;
@@ -432,9 +430,9 @@
             if (draggingId) {
                 const t = tables.find(x => x.id === draggingId);
                 if (t) {
-                    // CORRECCIÓN CLAVE: Se divide la diferencia por el factor currentScale para independizar el arrastre del zoom aplicado
-                    t.x = startMesaPos.x + ((e.clientX - startPos.x) / currentScale);
-                    t.y = startMesaPos.y + ((e.clientY - startPos.y) / currentScale);
+                    // SE REINSTALA LA LÓGICA ORIGINAL FLUIDA INMUNE AL ZOOM (BASADA EN MOVIMIENTO RELATIVO)
+                    t.x += e.movementX;
+                    t.y += e.movementY;
                     render();
                 }
             }
