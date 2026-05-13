@@ -19,6 +19,13 @@
             background-color: #f8fafc;
         }
         
+        /* HABILITAR ENTRADA DE TEXTO Y SELECCIÓN EN CAMPOS DE FORMULARIO */
+        input, textarea {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            touch-action: auto !important;
+        }
+        
         #main-scroll {
             overflow: auto;
             position: relative;
@@ -128,7 +135,7 @@
 
             .bg-white.border-b.px-6.py-3 { padding-top: 4px !important; padding-bottom: 4px !important; padding-left: 12px !important; padding-right: 12px !important; }
             .bg-white.border-b.px-6.py-3 p.text-sm { font-size: 11px !important; }
-            .bg-white.border-b.px-6.py-3 button { padding: 2px 8px !important; font-size: 9px !important; }
+            .bg-white.border-b.px-6.py-3 button { padding: 2px 8px !important; font-size: 9px !important; border-radius: 8px !important; }
 
             nav { padding-top: 4px !important; padding-bottom: 4px !important; padding-left: 8px !important; padding-right: 8px !important; }
             nav button { padding-top: 6px !important; padding-bottom: 6px !important; font-size: 9px !important; border-radius: 8px !important; }
@@ -579,7 +586,6 @@
 
         function clearCurrentAudit() { if(!confirm("¿Resetear el control actual?")) return; tables.forEach(t => t.status = 'free'); saveData(); render(); showToast("Plano Reiniciado"); }
 
-        /* CORRECCIÓN INTERNA DEL GUARDADO EN EL STORAGE */
         function saveAudit() {
             const insituCount = tables.filter(t => t.status === 'occupied' || t.status === 'indet').length;
             const microsVal = parseInt(document.getElementById('note-micros').value) || 0;
@@ -595,31 +601,33 @@
                 }
             });
 
-            const lugarInput = document.getElementById('note-lugar').value.trim();
-            const firmaInput = document.getElementById('note-firma').value.trim();
-            const obsInput = document.getElementById('note-observaciones').value.trim();
+            const lugarVal = document.getElementById('note-lugar') ? document.getElementById('note-lugar').value.trim() : 'Salón Principal';
+            const firmaVal = document.getElementById('note-firma') ? document.getElementById('note-firma').value.trim() : 'AUDITOR';
+            const obsVal = document.getElementById('note-observaciones') ? document.getElementById('note-observaciones').value.trim() : 'Sin observaciones.';
+            const horaVal = document.getElementById('note-hora') ? document.getElementById('note-hora').value : new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
             const newAudit = {
                 id: Date.now(), 
                 date: new Date().toLocaleDateString(), 
-                time: document.getElementById('note-hora').value, 
-                lugar: lugarInput || 'Salón Principal',
+                time: horaVal, 
+                lugar: lugarVal || 'Salón Principal',
                 insitu: insituCount, 
                 micros: microsVal,
                 discrepancy: discrepancyNum,
-                firma: (firmaInput || 'AUDITOR').toUpperCase(),
-                obs: obsInput || 'Sin observaciones.',
+                firma: (firmaVal || 'AUDITOR').toUpperCase(),
+                obs: obsVal || 'Sin observaciones.',
                 reportedTables: activeTablesDetail
             };
 
             audits.unshift(newAudit);
-
-            // Reseteo seguro de la app
-            tables.forEach(t => t.status = 'free');
-            document.getElementById('note-micros').value = '';
-            document.getElementById('note-observaciones').value = '';
-            
             saveData(); 
+
+            tables.forEach(t => t.status = 'free');
+            if(document.getElementById('note-micros')) document.getElementById('note-micros').value = '';
+            if(document.getElementById('note-observaciones')) document.getElementById('note-observaciones').value = '';
+            if(document.getElementById('note-lugar')) document.getElementById('note-lugar').value = '';
+            if(document.getElementById('note-firma')) document.getElementById('note-firma').value = '';
+            
             closeModal('audit-modal'); 
             setMode('history'); 
             showToast("Reporte Guardado");
@@ -732,8 +740,8 @@ Generado por el Sistema de Control SPOT CHECK
             showToast("Archivo TXT Descargado");
         }
 
-        function deleteAudit(id) { if(confirm("¿Eliminar este reporte del historial?")) { audits = audits.filter(a => a.id !== id); saveData(); renderHistory(); } }
-        function clearHistory() { if(confirm("¿Seguro de borrar todo el historial? Los datos no se podrán recuperar.")) { audits = []; saveData(); renderHistory(); } }
+        function deleteAudit(id) { if(confirm("¿Eliminar este reporte?")) { audits = audits.filter(a => a.id !== id); saveData(); renderHistory(); } }
+        function clearHistory() { if(confirm("¿Seguro de borrar TODO el historial?")) { audits = []; saveData(); renderHistory(); } }
         function openModal(id) { document.getElementById(id).classList.replace('hidden', 'flex'); }
         function closeModal(id) { document.getElementById(id).classList.replace('flex', 'hidden'); }
         function showToast(msg) {
