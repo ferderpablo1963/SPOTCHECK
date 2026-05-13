@@ -434,21 +434,20 @@
                 return;
             }
             if (draggingId) {
-                // FILTRADO INDIVIDUAL CORRECTO: Solo modificamos la mesa específica asignada a draggingId
                 const t = tables.find(x => x.id === draggingId);
                 if (t) {
+                    const container = document.getElementById('map-container');
+                    const rect = container.getBoundingClientRect();
+                    
                     let currentScale = 1;
                     if (isFitted) {
-                        const container = document.getElementById('map-container');
                         const main = document.getElementById('main-scroll');
                         currentScale = Math.min(main.clientWidth / container.offsetWidth, main.clientHeight / container.offsetHeight);
                     }
                     
-                    const dx = (e.clientX - startPos.x) / currentScale;
-                    const dy = (e.clientY - startPos.y) / currentScale;
-                    
-                    t.x = startMesaPos.x + dx;
-                    t.y = startMesaPos.y + dy;
+                    // CORRECCIÓN MATEMÁTICA DEFINITIVA: Posición del puntero relativa a la esquina del contenedor, dividida por la escala exacta.
+                    t.x = (e.clientX - rect.left) / currentScale;
+                    t.y = (e.clientY - rect.top) / currentScale;
                     render();
                 }
             }
