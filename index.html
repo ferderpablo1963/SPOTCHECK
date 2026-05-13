@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Se permite zoom nativo quitando user-scalable=no -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,9 +34,17 @@
             transform-origin: top left;
         }
 
-        .design-grid {
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 30px 30px;
+        /* AJUSTES PARA MODO APAISADO (LANDSCAPE) EN MÓVILES */
+        @media (max-height: 500px) and (orientation: landscape) {
+            header { padding-top: 1rem !important; padding-bottom: 0.5rem !important; }
+            header h1 { font-size: 1rem !important; }
+            header p { display: none; }
+            #lock-btn { padding: 0.25rem 0.75rem !important; }
+            nav { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+            nav button { py: 0.5rem !important; }
+            .bg-white.border-b { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+            footer { padding: 0.5rem !important; }
+            footer button { py: 0.75rem !important; }
         }
 
         .mesa {
@@ -87,7 +96,7 @@
 
         .screen-overlay {
             position: fixed;
-            left: 0; right: 0; bottom: 0; top: 205px;    
+            left: 0; right: 0; bottom: 0; top: 180px;    
             background-color: #f8fafc;
             z-index: 30;   
             overflow-y: auto;
@@ -95,6 +104,10 @@
             padding-bottom: 100px; 
         }
         .screen-overlay.active { display: flex; }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .screen-overlay { top: 120px; }
+        }
 
         @media print {
             header, nav, footer, .no-print, #toast { display: none !important; }
@@ -104,11 +117,11 @@
         }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden select-none text-slate-900">
+<body class="h-screen flex flex-col overflow-hidden text-slate-900">
 
     <header class="bg-slate-950 text-white p-5 pt-12 flex justify-between items-center shrink-0 shadow-2xl z-[60]">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg transform -rotate-3">
+            <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg transform -rotate-3 shrink-0">
                 <i class="fa-solid fa-layer-group text-slate-950 text-xl"></i>
             </div>
             <div>
@@ -122,6 +135,7 @@
         </button>
     </header>
 
+    <!-- Barra de Estado -->
     <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center z-50 shrink-0">
         <div class="flex gap-4">
             <div>
@@ -157,6 +171,7 @@
         </div>
     </main>
 
+    <!-- Pantalla de Reporte -->
     <div id="notes-screen" class="screen-overlay flex-col p-4">
         <div id="printable-area" class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-200 max-w-md mx-auto w-full space-y-6">
             <div class="text-center border-b border-slate-100 pb-4">
@@ -202,6 +217,7 @@
         </div>
     </div>
 
+    <!-- Pantalla de Historial -->
     <div id="history-screen" class="screen-overlay flex-col p-6">
         <h2 class="text-2xl font-black uppercase italic text-slate-950 mb-6 shrink-0">Historial de Controles</h2>
         <div id="history-list" class="space-y-4"></div>
@@ -240,6 +256,7 @@
         </div>
     </footer>
 
+    <!-- Modales y Toasts -->
     <div id="audit-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm hidden z-[200] items-center justify-center p-8">
         <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl">
             <h3 class="text-xl font-black text-center mb-2 uppercase text-slate-900 italic">Guardar Control</h3>
@@ -462,7 +479,6 @@
             const occupied = tables.filter(t => t.status === 'occupied').length;
             const indet = tables.filter(t => t.status === 'indet').length;
             const totalActive = occupied + indet;
-            const url = URL.createObjectURL(new Blob([], {type: 'text/plain'})); // Dummy call for UI structure preservation
             audits.unshift({
                 id: Date.now(), 
                 date: new Date().toLocaleDateString(), 
@@ -477,7 +493,6 @@
             });
             tables.forEach(t => t.status = 'free');
             saveData(); 
-            localStorage.setItem(`${DB_PREFIX}_audits`, JSON.stringify(audits));
             closeModal('audit-modal'); setMode('history'); showToast("Reporte Guardado");
         }
 
@@ -524,8 +539,8 @@
             showToast("TXT Exportado");
         }
 
-        function deleteAudit(id) { if(confirm("¿Eliminar reporte?")) { audits = audits.filter(a => a.id !== id); localStorage.setItem(`${DB_PREFIX}_audits`, JSON.stringify(audits)); renderHistory(); } }
-        function clearHistory() { if(confirm("¿Borrar todo?")) { audits = []; localStorage.setItem(`${DB_PREFIX}_audits`, JSON.stringify(audits)); renderHistory(); } }
+        function deleteAudit(id) { if(confirm("¿Eliminar reporte?")) { audits = audits.filter(a => a.id !== id); saveData(); renderHistory(); } }
+        function clearHistory() { if(confirm("¿Borrar todo?")) { audits = []; saveData(); renderHistory(); } }
         function openModal(id) { document.getElementById(id).classList.replace('hidden', 'flex'); }
         function closeModal(id) { document.getElementById(id).classList.replace('flex', 'hidden'); }
         function showToast(msg) {
