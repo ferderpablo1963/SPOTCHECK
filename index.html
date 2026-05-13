@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- Se permite zoom nativo quitando user-scalable=no -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -34,17 +33,30 @@
             transform-origin: top left;
         }
 
-        /* AJUSTES PARA MODO APAISADO (LANDSCAPE) EN MÓVILES */
+        /* BARRA SUPERIOR ULTRA SUTIL EN MODO APAISADO (LANDSCAPE) */
         @media (max-height: 500px) and (orientation: landscape) {
-            header { padding-top: 1rem !important; padding-bottom: 0.5rem !important; }
-            header h1 { font-size: 1rem !important; }
-            header p { display: none; }
-            #lock-btn { padding: 0.25rem 0.75rem !important; }
-            nav { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
-            nav button { py: 0.5rem !important; }
-            .bg-white.border-b { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
-            footer { padding: 0.5rem !important; }
-            footer button { py: 0.75rem !important; }
+            header { 
+                padding-top: 4px !important; 
+                padding-bottom: 4px !important; 
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+                height: 32px !important;
+            }
+            header .flex.items-center.gap-3 div:first-child { display: none !important; } /* Oculta icono grande */
+            header h1 { font-size: 11px !important; line-height: 1 !important; }
+            header p { display: none !important; }
+            #lock-btn { padding-top: 2px !important; padding-bottom: 2px !important; padding-left: 8px !important; padding-right: 8px !important; border-radius: 8px !important; }
+            #lock-btn span { font-size: 8px !important; }
+            #lock-btn i { font-size: 8px !important; }
+            
+            nav { padding-top: 2px !important; padding-bottom: 2px !important; padding-left: 8px !important; padding-right: 8px !important; }
+            nav button { padding-top: 4px !important; padding-bottom: 4px !important; font-size: 9px !important; }
+            
+            .bg-white.border-b { padding-top: 2px !important; padding-bottom: 2px !important; padding-left: 12px !important; padding-right: 12px !important; }
+            .bg-white.border-b p { font-size: 10px !important; }
+            
+            footer { padding: 4px !important; }
+            footer button { padding-top: 6px !important; padding-bottom: 6px !important; font-size: 10px !important; }
         }
 
         .mesa {
@@ -106,7 +118,7 @@
         .screen-overlay.active { display: flex; }
 
         @media (max-height: 500px) and (orientation: landscape) {
-            .screen-overlay { top: 120px; }
+            .screen-overlay { top: 100px; }
         }
 
         @media print {
@@ -135,9 +147,15 @@
         </button>
     </header>
 
-    <!-- Barra de Estado -->
-    <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center z-50 shrink-0">
-        <div class="flex gap-4">
+    <div class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center z-50 shrink-0 gap-2">
+        <div class="flex gap-4 items-center">
+            <div>
+                <p class="text-[8px] font-black text-slate-400 uppercase">Salón Actual</p>
+                <select id="salon-selector" onchange="changeSalon()" class="text-xs font-black bg-slate-100 border-none rounded p-1 outline-none text-slate-800">
+                    <option value="Lobby Bar">Lobby Bar</option>
+                </select>
+            </div>
+            <div class="w-[1px] h-6 bg-slate-100 my-auto"></div>
             <div>
                 <p class="text-[8px] font-black text-slate-400 uppercase">Oc/Ind</p>
                 <p id="stat-occupied" class="text-sm font-black">0</p>
@@ -171,7 +189,6 @@
         </div>
     </main>
 
-    <!-- Pantalla de Reporte -->
     <div id="notes-screen" class="screen-overlay flex-col p-4">
         <div id="printable-area" class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-200 max-w-md mx-auto w-full space-y-6">
             <div class="text-center border-b border-slate-100 pb-4">
@@ -217,7 +234,6 @@
         </div>
     </div>
 
-    <!-- Pantalla de Historial -->
     <div id="history-screen" class="screen-overlay flex-col p-6">
         <h2 class="text-2xl font-black uppercase italic text-slate-950 mb-6 shrink-0">Historial de Controles</h2>
         <div id="history-list" class="space-y-4"></div>
@@ -243,6 +259,11 @@
                 <button onclick="deselectTable()" class="bg-slate-950 text-white w-14 h-14 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
             </div>
             <div id="design-actions" class="flex flex-col gap-2">
+                <div class="flex gap-2 items-center bg-slate-50 p-2 rounded-xl border border-slate-200 mb-1">
+                    <input id="salon-name-input" type="text" class="flex-1 bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-bold outline-none" placeholder="Nombre de Salón...">
+                    <button onclick="saveCurrentSalon()" class="bg-emerald-500 text-slate-950 px-3 py-1 rounded-lg text-[10px] font-black uppercase">Guardar Salón</button>
+                    <button onclick="deleteCurrentSalon()" class="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-[10px] font-black uppercase"><i class="fa-solid fa-trash"></i></button>
+                </div>
                 <div class="flex gap-2">
                     <button onclick="addTable('simple')" class="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black text-[9px] uppercase shadow-lg">
                         + Mesa Simple
@@ -256,7 +277,6 @@
         </div>
     </footer>
 
-    <!-- Modales y Toasts -->
     <div id="audit-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm hidden z-[200] items-center justify-center p-8">
         <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl">
             <h3 class="text-xl font-black text-center mb-2 uppercase text-slate-900 italic">Guardar Control</h3>
@@ -275,7 +295,13 @@
     <script>
         const DB_PREFIX = 'spotcheck_final_v2';
         
-        let tables = JSON.parse(localStorage.getItem(`${DB_PREFIX}_tables`)) || [];
+        // Estructura de Salones
+        let salones = JSON.parse(localStorage.getItem(`${DB_PREFIX}_salones`)) || {
+            "Lobby Bar": []
+        };
+        let currentSalon = localStorage.getItem(`${DB_PREFIX}_current_salon`) || "Lobby Bar";
+        
+        let tables = salones[currentSalon] || [];
         let audits = JSON.parse(localStorage.getItem(`${DB_PREFIX}_audits`)) || [];
         let isLocked = JSON.parse(localStorage.getItem(`${DB_PREFIX}_locked`)) ?? true; 
         
@@ -291,12 +317,71 @@
         let startMesaSize = { w: 0, h: 0 };
 
         function init() {
-            if (tables.length === 0) createInitialLayout();
+            updateSalonSelectorUI();
+            if (tables.length === 0 && currentSalon === "Lobby Bar") createInitialLayout();
             render();
             updateLockUI();
             startTime();
             window.addEventListener('pointermove', handlePointerMove);
             window.addEventListener('pointerup', handlePointerUp);
+        }
+
+        // Gestión de múltiples salones
+        function updateSalonSelectorUI() {
+            const selector = document.getElementById('salon-selector');
+            selector.innerHTML = '';
+            Object.keys(salones).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.innerText = name;
+                if(name === currentSalon) opt.selected = true;
+                selector.appendChild(opt);
+            });
+            document.getElementById('salon-name-input').value = currentSalon;
+            document.getElementById('note-lugar').value = currentSalon;
+        }
+
+        function changeSalon() {
+            const selector = document.getElementById('salon-selector');
+            currentSalon = selector.value;
+            localStorage.setItem(`${DB_PREFIX}_current_salon`, currentSalon);
+            tables = salones[currentSalon] || [];
+            document.getElementById('salon-name-input').value = currentSalon;
+            document.getElementById('note-lugar').value = currentSalon;
+            deselectTable();
+            render();
+        }
+
+        function saveCurrentSalon() {
+            const nameInput = document.getElementById('salon-name-input').value.trim();
+            if(!nameInput) { alert("Ingresa un nombre válido"); return; }
+            
+            // Guardar el plano actual en el objeto de salones
+            salones[nameInput] = JSON.parse(JSON.stringify(tables));
+            currentSalon = nameInput;
+            
+            localStorage.setItem(`${DB_PREFIX}_salones`, JSON.stringify(salones));
+            localStorage.setItem(`${DB_PREFIX}_current_salon`, currentSalon);
+            
+            updateSalonSelectorUI();
+            showToast("Salón Guardado");
+        }
+
+        function deleteCurrentSalon() {
+            const keys = Object.keys(salones);
+            if(keys.length <= 1) { alert("No puedes eliminar el único salón disponible."); return; }
+            if(!confirm(`¿Seguro que deseas borrar por completo el salón "${currentSalon}"?`)) return;
+            
+            delete salones[currentSalon];
+            currentSalon = Object.keys(salones)[0];
+            tables = salones[currentSalon];
+            
+            localStorage.setItem(`${DB_PREFIX}_salones`, JSON.stringify(salones));
+            localStorage.setItem(`${DB_PREFIX}_current_salon`, currentSalon);
+            
+            updateSalonSelectorUI();
+            render();
+            showToast("Salón Eliminado");
         }
 
         function toggleFit() {
@@ -484,7 +569,7 @@
                 date: new Date().toLocaleDateString(), 
                 time: document.getElementById('note-hora').value, 
                 abiertas: tables.length, 
-                lugar: document.getElementById('note-lugar').value || 'General',
+                lugar: document.getElementById('note-lugar').value || currentSalon,
                 insitu: document.getElementById('note-insitu').value || totalActive, 
                 micros: document.getElementById('note-micros').value || '-', 
                 firma: (document.getElementById('note-firma').value || 'USER').toUpperCase(),
@@ -550,8 +635,8 @@
             setTimeout(() => t.classList.remove('show'), 2000);
         }
         function saveData() {
-            localStorage.setItem(`${DB_PREFIX}_tables`, JSON.stringify(tables));
-            localStorage.setItem(`${DB_PREFIX}_audits`, JSON.stringify(audits));
+            salones[currentSalon] = JSON.parse(JSON.stringify(tables));
+            localStorage.setItem(`${DB_PREFIX}_salones`, JSON.stringify(salones));
             localStorage.setItem(`${DB_PREFIX}_locked`, JSON.stringify(isLocked));
         }
         function resetLayout() { if (confirm("¿Limpiar diseño?")) { createInitialLayout(); render(); } }
