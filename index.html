@@ -430,9 +430,11 @@
             if (draggingId) {
                 const t = tables.find(x => x.id === draggingId);
                 if (t) {
-                    // SE REINSTALA LA LÓGICA ORIGINAL FLUIDA INMUNE AL ZOOM (BASADA EN MOVIMIENTO RELATIVO)
-                    t.x += e.movementX;
-                    t.y += e.movementY;
+                    // SOLUCCIÓN ABSOLUTA: Se calcula el desplazamiento restando la posición de origen táctil
+                    const dx = e.clientX - startPos.x;
+                    const dy = e.clientY - startPos.y;
+                    t.x = startMesaPos.x + dx;
+                    t.y = startMesaPos.y + dy;
                     render();
                 }
             }
