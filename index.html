@@ -7,26 +7,21 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#020617">
     
-    <title>SPOT CHECK - CONTROL PROFESIONAL</title>
+    <title>SPOT CHECK - 1225 LOBBY BAR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
     <style>
-        body { 
-            font-family: system-ui, -apple-system, sans-serif; 
-            overscroll-behavior: none; 
-            -webkit-tap-highlight-color: transparent; 
-            background-color: #f8fafc;
-        }
+        body { font-family: system-ui, -apple-system, sans-serif; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; background-color: #f8fafc; }
         input, textarea { user-select: text !important; -webkit-user-select: text !important; touch-action: auto !important; }
         #main-scroll { overflow: auto; position: relative; background-color: #e2e8f0; }
-        #map-container { height: 1200px; width: 2000px; position: relative; background-color: #ffffff; transition: all 0.3s ease; }
+        #map-container { height: 1200px; width: 2000px; position: relative; background-color: #ffffff; }
         .design-grid { background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 30px 30px; }
         .mesa {
             position: absolute; z-index: 10; display: flex; align-items: center; justify-content: center;
             font-weight: 800; border-radius: 12px; transition: all 0.2s; cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); user-select: none; font-size: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); user-select: none; font-size: 13px;
         }
         .mesa-free { background-color: #ffffff; color: #64748b; border: 2px solid #e2e8f0; }
         .mesa-occupied { background-color: #000000 !important; color: #ffffff !important; border: 2px solid #000000 !important; }
@@ -45,7 +40,7 @@
             </div>
             <div>
                 <h1 class="font-black text-xl italic leading-none tracking-tighter">SPOT CHECK</h1>
-                <p class="text-[8px] text-slate-400 font-black tracking-widest uppercase mt-1">Control Profesional</p>
+                <p class="text-[8px] text-slate-400 font-black tracking-widest uppercase mt-1">1225 LOBBY BAR</p>
             </div>
         </div>
         <button onclick="toggleLock()" class="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center border border-slate-800">
@@ -58,7 +53,7 @@
             <div><span class="text-[8px] font-black text-slate-400 uppercase block">Ocupadas</span><span id="stat-occupied" class="text-xl font-black">0</span></div>
             <div class="border-l border-slate-100 pl-6"><span class="text-[8px] font-black text-slate-400 uppercase block">Ratio</span><span id="stat-percent" class="text-xl font-black text-emerald-600">0%</span></div>
         </div>
-        <p id="current-time" class="text-[10px] font-black uppercase tracking-widest">00:00</p>
+        <p id="current-time" class="text-[10px] font-black uppercase">00:00</p>
     </div>
 
     <nav class="px-4 py-3 bg-slate-50 flex gap-2 border-b border-slate-200 shrink-0">
@@ -72,9 +67,10 @@
 
     <main class="flex-1 overflow-hidden relative" id="main-scroll">
         <div id="map-container">
+            <div class="absolute top-10 left-[750px] text-slate-200 font-black text-5xl opacity-30 pointer-events-none tracking-[1em]">BARRA</div>
             <div id="mesas-layer" class="w-full h-full relative"></div>
         </div>
-        <button id="btn-add-mesa" onclick="openModal('add-modal')" class="hidden fixed right-6 bottom-32 w-16 h-16 bg-slate-950 text-emerald-400 rounded-full shadow-2xl items-center justify-center z-[80] border-4 border-white active:scale-90">
+        <button id="btn-add-mesa" onclick="openModal('add-modal')" class="hidden fixed right-8 bottom-32 w-16 h-16 bg-slate-950 text-emerald-400 rounded-full shadow-2xl items-center justify-center z-[80] border-4 border-white active:scale-90">
             <i class="fa-solid fa-plus text-xl"></i>
         </button>
     </main>
@@ -99,8 +95,8 @@
     </div>
 
     <div id="history-screen" class="screen-overlay flex-col p-6">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-black italic tracking-tighter text-slate-950 uppercase">Historial de Reportes</h2>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black italic uppercase">Historial</h2>
             <button onclick="clearHistory()" class="text-[10px] font-black uppercase text-red-500">Borrar Todo</button>
         </div>
         <div id="history-list" class="space-y-4"></div>
@@ -108,21 +104,12 @@
 
     <div id="add-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center z-[200] p-6">
         <div class="bg-white w-full max-w-sm rounded-[40px] p-8">
-            <h3 id="modal-title" class="text-2xl font-black mb-6 uppercase italic">Mesa</h3>
-            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Etiqueta / Número</label>
-            <input type="text" id="new-label" placeholder="EJ: 101" class="w-full h-14 bg-slate-100 rounded-2xl px-6 font-bold text-lg mb-4 outline-none uppercase">
-            
+            <h3 id="modal-title" class="text-2xl font-black mb-6 uppercase italic">Elemento</h3>
+            <input type="text" id="new-label" placeholder="ETIQUETA" class="w-full h-14 bg-slate-100 rounded-2xl px-6 font-bold text-lg mb-4 outline-none uppercase">
             <div class="grid grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ancho (px)</label>
-                    <input type="number" id="new-w" class="w-full h-12 bg-slate-50 border rounded-xl text-center font-bold">
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Alto (px)</label>
-                    <input type="number" id="new-h" class="w-full h-12 bg-slate-50 border rounded-xl text-center font-bold">
-                </div>
+                <input type="number" id="new-w" placeholder="Ancho" class="w-full h-12 bg-slate-50 border rounded-xl text-center font-bold">
+                <input type="number" id="new-h" placeholder="Alto" class="w-full h-12 bg-slate-50 border rounded-xl text-center font-bold">
             </div>
-
             <div class="flex gap-3">
                 <button onclick="closeModal('add-modal')" class="flex-1 h-14 bg-slate-100 rounded-2xl font-black uppercase text-slate-400">Cerrar</button>
                 <button onclick="confirmMesa()" class="flex-1 h-14 bg-slate-950 rounded-2xl font-black uppercase text-emerald-400">Guardar</button>
@@ -132,16 +119,12 @@
     </div>
 
     <footer class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-slate-100 flex gap-3 z-[100]">
-        <button onclick="clearCurrentAudit()" class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center active:scale-90 transition-transform">
-            <i class="fa-solid fa-rotate-left"></i>
-        </button>
+        <button onclick="clearCurrentAudit()" class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center active:scale-90"><i class="fa-solid fa-rotate-left"></i></button>
         <input type="file" id="ocr-camera-input" accept="image/*" capture="environment" class="hidden" onchange="processImageOCR(event)">
-        <button onclick="document.getElementById('ocr-camera-input').click()" class="flex-1 bg-slate-950 text-emerald-400 h-14 rounded-3xl font-black uppercase flex items-center justify-center gap-2 shadow-2xl active:scale-95 transition-all">
-            <i id="ocr-icon" class="fa-solid fa-camera text-xs"></i> <span id="ocr-text">SCAN</span>
+        <button onclick="document.getElementById('ocr-camera-input').click()" class="flex-1 bg-slate-950 text-emerald-400 h-14 rounded-3xl font-black uppercase flex items-center justify-center gap-2 shadow-2xl active:scale-95">
+            <i id="ocr-icon" class="fa-solid fa-camera"></i> <span id="ocr-text">SCAN</span>
         </button>
-        <button onclick="setMode('notes')" class="flex-1 bg-emerald-500 text-slate-950 h-14 rounded-3xl font-black uppercase shadow-xl active:scale-95 transition-all">
-            Finalizar
-        </button>
+        <button onclick="setMode('notes')" class="flex-1 bg-emerald-500 text-slate-950 h-14 rounded-3xl font-black uppercase shadow-xl active:scale-95">Finalizar</button>
     </footer>
 
     <div id="toast" class="bg-slate-950 text-white px-8 py-4 rounded-3xl font-bold text-xs shadow-2xl flex items-center gap-3">
@@ -150,20 +133,36 @@
     </div>
 
     <script>
-        const DB_PREFIX = 'spotcheck_v3';
+        const DB_PREFIX = 'spotcheck_1225_final';
         let tables = JSON.parse(localStorage.getItem(`${DB_PREFIX}_tables`)) || [];
         let audits = JSON.parse(localStorage.getItem(`${DB_PREFIX}_audits`)) || [];
         let currentMode = 'audit', isLocked = true, editingMesaId = null;
 
         function init() {
+            if (tables.length === 0) createInitialMap();
             render();
-            updateTime();
-            setInterval(updateTime, 1000);
+            setInterval(() => document.getElementById('current-time').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), 1000);
             const scroll = document.getElementById('main-scroll');
-            scroll.scrollLeft = 850; scroll.scrollTop = 400;
+            scroll.scrollLeft = 500; scroll.scrollTop = 100;
         }
 
-        function updateTime() { document.getElementById('current-time').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+        function createInitialMap() {
+            const layout = [
+                // Arriba Barra
+                {id:1, label:'1', x:750, y:80, w:55, h:55}, {id:2, label:'2', x:820, y:80, w:55, h:55}, {id:3, label:'3', x:890, y:80, w:55, h:55},
+                // Laterales Izquierda
+                {id:40, label:'40', x:150, y:80, w:80, h:55}, {id:41, label:'41', x:150, y:250, w:80, h:55}, {id:42, label:'42', x:150, y:450, w:80, h:55},
+                // Módulo Central (TVs)
+                {id:4, label:'4', x:750, y:250, w:60, h:60}, {id:5, label:'5', x:820, y:250, w:60, h:60}, {id:6, label:'6', x:890, y:250, w:60, h:60}, {id:7, label:'7', x:960, y:250, w:60, h:60},
+                {id:8, label:'8', x:1100, y:350, w:60, h:60}, {id:9, label:'9', x:1180, y:350, w:60, h:60},
+                // Mesas 30s
+                {id:30, label:'30', x:550, y:500, w:60, h:60}, {id:31, label:'31', x:550, y:650, w:60, h:60}, {id:33, label:'33', x:400, y:450, w:60, h:60},
+                // Entrada
+                {id:22, label:'22', x:850, y:800, w:60, h:60}, {id:23, label:'23', x:780, y:800, w:60, h:60}
+            ];
+            tables = layout.map(t => ({...t, status:'free'}));
+            saveData();
+        }
 
         function render() {
             const layer = document.getElementById('mesas-layer'); layer.innerHTML = '';
@@ -174,12 +173,10 @@
                 div.className = `mesa ${t.status === 'occupied' ? 'mesa-occupied' : 'mesa-free'}`;
                 div.style.cssText = `left:${t.x}px; top:${t.y}px; width:${t.w}px; height:${t.h}px;`;
                 div.innerText = t.label;
-                
-                div.onclick = (e) => {
+                div.onclick = () => {
                     if(currentMode === 'audit') { t.status = t.status === 'free' ? 'occupied' : 'free'; render(); saveData(); }
                     else if(currentMode === 'design') { openEditMesa(t); }
                 };
-
                 if(currentMode === 'design') {
                     div.onmousedown = (e) => startDrag(e, t);
                     div.ontouchstart = (e) => startDrag(e, t);
@@ -191,7 +188,6 @@
             document.getElementById('note-insitu').value = count;
         }
 
-        // --- LÓGICA DE DISEÑO (DRAG & EDIT) ---
         function startDrag(e, t) {
             const ev = e.touches ? e.touches[0] : e;
             let startX = ev.clientX, startY = ev.clientY;
@@ -208,7 +204,7 @@
 
         function openEditMesa(t) {
             editingMesaId = t.id;
-            document.getElementById('modal-title').innerText = "Editar Elemento";
+            document.getElementById('modal-title').innerText = "Editar Mesa";
             document.getElementById('new-label').value = t.label;
             document.getElementById('new-w').value = t.w;
             document.getElementById('new-h').value = t.h;
@@ -218,27 +214,19 @@
 
         function confirmMesa() {
             const label = document.getElementById('new-label').value.toUpperCase();
-            const w = parseInt(document.getElementById('new-w').value) || 70;
-            const h = parseInt(document.getElementById('new-h').value) || 70;
-            if(!label) return;
-
+            const w = parseInt(document.getElementById('new-w').value) || 60;
+            const h = parseInt(document.getElementById('new-h').value) || 60;
             if(editingMesaId) {
                 const t = tables.find(x => x.id === editingMesaId);
                 t.label = label; t.w = w; t.h = h;
             } else {
-                tables.push({ id: Date.now(), label, x: 1000, y: 600, w, h, status: 'free' });
+                tables.push({ id: Date.now(), label, x: 800, y: 400, w, h, status: 'free' });
             }
             saveData(); render(); closeModal('add-modal');
         }
 
-        function deleteMesa() {
-            if(confirm("¿Eliminar este elemento del diseño?")) {
-                tables = tables.filter(x => x.id !== editingMesaId);
-                saveData(); render(); closeModal('add-modal');
-            }
-        }
+        function deleteMesa() { if(confirm("¿Eliminar?")) { tables = tables.filter(x => x.id !== editingMesaId); saveData(); render(); closeModal('add-modal'); } }
 
-        // --- LÓGICA DE REPORTE Y DESCARGA (FORMATO TXT SOLICITADO) ---
         function saveAudit() {
             const insitu = parseInt(document.getElementById('note-insitu').value);
             const micros = parseInt(document.getElementById('note-micros').value) || 0;
@@ -260,7 +248,7 @@
 ==================================================
 FECHA: ${a.date}
 HORA: ${a.time}
-SECTOR EVALUADO: Salón Principal
+SECTOR EVALUADO: 1225 LOBBY BAR
 AUDITOR RESPONSABLE: AUDITOR
 --------------------------------------------------
 MESAS OCUPADAS EN PLANO (IN SITU): ${a.insitu}
@@ -274,38 +262,28 @@ OBSERVACIONES Y DESCARGOS:
 Sin observaciones.
 ==================================================
 Generado por el Sistema de Control SPOT CHECK`;
-
             const blob = new Blob([content], {type: 'text/plain'});
-            const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = url;
+            link.href = URL.createObjectURL(blob);
             link.download = `SPOTCHECK_Reporte_${a.date.replace(/\//g, '-')}.txt`;
             link.click();
-            URL.revokeObjectURL(url);
         }
 
         function renderHistory() {
             document.getElementById('history-list').innerHTML = audits.map(a => `
-                <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest">${a.date} • ${a.time}</p>
-                            <h4 class="text-xl font-black italic text-slate-950">${a.insitu} In Situ vs ${a.micros} POS</h4>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="downloadAuditTXT(${a.id})" class="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center hover:text-emerald-600 transition-colors">
-                                <i class="fa-solid fa-file-arrow-down"></i>
-                            </button>
-                            <button onclick="deleteAudit(${a.id})" class="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center hover:text-red-500 transition-colors">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div>
+                <div class="bg-white p-6 rounded-[32px] border shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] font-black text-emerald-500 uppercase">${a.date} • ${a.time}</p>
+                        <h4 class="text-xl font-black italic">${a.insitu} vs ${a.micros}</h4>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="downloadAuditTXT(${a.id})" class="w-10 h-10 bg-slate-50 border rounded-xl flex items-center justify-center"><i class="fa-solid fa-file-arrow-down"></i></button>
+                        <button onclick="deleteAudit(${a.id})" class="w-10 h-10 bg-slate-50 border text-red-500 rounded-xl flex items-center justify-center"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>
-            `).join('') || '<p class="text-center py-20 opacity-20 font-black italic">HISTORIAL VACÍO</p>';
+            `).join('') || '<p class="text-center py-20 opacity-20 font-black italic">VACÍO</p>';
         }
 
-        // --- UTILIDADES ---
         function setMode(m) {
             currentMode = m;
             ['audit', 'design', 'notes', 'history'].forEach(id => {
@@ -319,50 +297,14 @@ Generado por el Sistema de Control SPOT CHECK`;
             render();
         }
 
-        async function processImageOCR(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const icon = document.getElementById('ocr-icon');
-            const textSpan = document.getElementById('ocr-text');
-            icon.className = "fa-solid fa-circle-notch animate-spin text-emerald-400";
-            textSpan.innerText = "LEYENDO...";
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    Tesseract.recognize(img, 'eng').then(({ data: { text } }) => {
-                        const detected = text.match(/\d+/g) || [];
-                        let matched = 0;
-                        tables.forEach(t => { if(detected.includes(t.label)) { t.status = 'occupied'; matched++; } });
-                        showToast(matched > 0 ? `Sincronizado: ${matched} mesas` : "No se detectaron mesas");
-                        render(); saveData();
-                    }).finally(() => {
-                        icon.className = "fa-solid fa-camera text-xs";
-                        textSpan.innerText = "SCAN";
-                    });
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function toggleLock() { isLocked = !isLocked; document.getElementById('lock-icon').className = isLocked ? "fa-solid fa-lock text-red-500" : "fa-solid fa-lock-open text-emerald-500"; showToast(isLocked ? "Cerrado" : "Abierto"); }
-        function openModal(id) { 
-            document.getElementById(id).style.display = 'flex'; 
-            if(id==='add-modal' && !editingMesaId) {
-                document.getElementById('modal-title').innerText = "Nueva Mesa";
-                document.getElementById('new-label').value = "";
-                document.getElementById('new-w').value = 70;
-                document.getElementById('new-h').value = 70;
-                document.getElementById('btn-delete-mesa').style.display = 'none';
-            }
-        }
+        function toggleLock() { isLocked = !isLocked; document.getElementById('lock-icon').className = isLocked ? "fa-solid fa-lock text-red-500" : "fa-solid fa-lock-open text-emerald-500"; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; if(id==='add-modal' && !editingMesaId) { document.getElementById('modal-title').innerText = "Nuevo"; document.getElementById('new-label').value = ""; document.getElementById('btn-delete-mesa').style.display = 'none'; } }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; editingMesaId = null; }
         function showToast(msg) { const t = document.getElementById('toast'); document.getElementById('toast-msg').innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
         function saveData() { localStorage.setItem(`${DB_PREFIX}_tables`, JSON.stringify(tables)); localStorage.setItem(`${DB_PREFIX}_audits`, JSON.stringify(audits)); }
-        function deleteAudit(id) { if(confirm("¿Eliminar reporte?")) { audits = audits.filter(a => a.id !== id); saveData(); renderHistory(); } }
-        function clearHistory() { if(confirm("¿Borrar historial?")) { audits = []; saveData(); renderHistory(); } }
-        function clearCurrentAudit() { if(confirm("¿Limpiar mesas?")) { tables.forEach(t => t.status = 'free'); render(); saveData(); } }
+        function deleteAudit(id) { if(confirm("¿Eliminar?")) { audits = audits.filter(a => a.id !== id); saveData(); renderHistory(); } }
+        function clearHistory() { if(confirm("¿Borrar todo?")) { audits = []; saveData(); renderHistory(); } }
+        function clearCurrentAudit() { if(confirm("¿Limpiar?")) { tables.forEach(t => t.status = 'free'); render(); saveData(); } }
 
         init();
     </script>
